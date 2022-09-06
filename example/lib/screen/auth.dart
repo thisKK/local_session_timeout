@@ -34,7 +34,8 @@ class AuthPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () async {
                   // start listening only after user logs in
-                  sessionTimeoutProvider.start();
+                  sessionTimeoutProvider.sessionStream
+                      .add(SessionState.stopListening);
                   loggedOutReason = await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => MyHomePage(),

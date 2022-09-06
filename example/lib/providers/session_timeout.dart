@@ -7,13 +7,15 @@ class SessionTimeoutProvider with ChangeNotifier {
   final StreamController<SessionState> sessionStream =
       StreamController<SessionState>();
 
-  void start() {
-    sessionStream.add(SessionState.startListening);
-    notifyListeners();
-  }
+  final sessionConfig = SessionConfig(
+    invalidateSessionForAppLostFocus: const Duration(seconds: 3),
+    invalidateSessionForUserInactiviity: const Duration(seconds: 5),
+  );
 
-  void stop() {
-    sessionStream.add(SessionState.stopListening);
+  @override
+  void dispose() {
+    sessionStream.close();
+    super.dispose();
     notifyListeners();
   }
 }

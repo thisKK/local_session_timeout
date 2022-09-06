@@ -1,5 +1,7 @@
 import 'package:example/providers/session_timeout.dart';
 import 'package:flutter/material.dart';
+import 'package:local_session_timeout/local_session_timeout.dart';
+import 'package:provider/provider.dart';
 
 class WritingPage extends StatefulWidget {
   const WritingPage({Key? key}) : super(key: key);
@@ -13,18 +15,19 @@ class _WritingPageState extends State<WritingPage> {
 
   @override
   void initState() {
-    sessionTimeoutProvider.start();
+    sessionTimeoutProvider = context.read<SessionTimeoutProvider>();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    sessionTimeoutProvider.sessionStream.add(SessionState.startListening);
     if (MediaQuery.of(context).viewInsets.bottom > 0) {
       // softkeyboard is open
-      sessionTimeoutProvider.stop();
+      sessionTimeoutProvider.sessionStream.add(SessionState.stopListening);
     } else {
       // keyboard is closed
-      sessionTimeoutProvider.start();
+      sessionTimeoutProvider.sessionStream.add(SessionState.startListening);
     }
     return Scaffold(
       appBar: AppBar(),

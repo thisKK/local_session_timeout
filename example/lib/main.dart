@@ -27,18 +27,16 @@ class MyApp extends StatelessWidget {
 
   /// Make this stream available throughout the widget tree with with any state management library
   /// like bloc, provider, GetX, ..
-  final session = StreamController<SessionState>();
   SessionTimeoutProvider sessionTimeoutProvider = SessionTimeoutProvider();
 
   @override
   Widget build(BuildContext context) {
-    final sessionConfig = SessionConfig(
-      invalidateSessionForAppLostFocus: const Duration(seconds: 3),
-      invalidateSessionForUserInactiviity: const Duration(seconds: 5),
-    );
-    sessionConfig.stream.listen((SessionTimeoutState timeoutEvent) {
+    sessionTimeoutProvider = context.read<SessionTimeoutProvider>();
+
+    sessionTimeoutProvider.sessionConfig.stream
+        .listen((SessionTimeoutState timeoutEvent) {
       // stop listening, as user will already be in auth page
-      sessionTimeoutProvider.start();
+      sessionTimeoutProvider.sessionStream.add(SessionState.stopListening);
       if (timeoutEvent == SessionTimeoutState.userInactivityTimeout) {
         // handle user  inactive timeout
         _navigator.push(MaterialPageRoute(
@@ -54,7 +52,7 @@ class MyApp extends StatelessWidget {
       }
     });
     return SessionTimeoutManager(
-      sessionConfig: sessionConfig,
+      sessionConfig: sessionTimeoutProvider.sessionConfig,
       sessionStateStream: sessionTimeoutProvider.sessionStream.stream,
       child: MaterialApp(
         navigatorKey: _navigatorKey,

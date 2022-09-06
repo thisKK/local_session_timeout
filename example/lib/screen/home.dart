@@ -25,7 +25,9 @@ class MyHomePage extends StatelessWidget {
                 //! Its better to handle listening logic in state management
                 //! libraries rather than writing them at random places in your app
 
-                sessionTimeoutProvider.start();
+                sessionTimeoutProvider.sessionStream
+                    .add(SessionState.stopListening);
+
                 await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const ReadingPage(),
@@ -33,7 +35,8 @@ class MyHomePage extends StatelessWidget {
                 );
 
                 //! after user returns from that page start listening again
-                sessionTimeoutProvider.start();
+                sessionTimeoutProvider.sessionStream
+                    .add(SessionState.startListening);
               },
               child: const Text("Reading page"),
             ),
